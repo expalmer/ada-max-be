@@ -129,6 +129,10 @@ app.use((req, res) => {
   res.status(404).json({ message: "Page Not Found" });
 });
 
-app.listen(9000, () => {
-  console.log("Server is running on port 9000");
-});
+if (process.env.NODE_ENV !== "production") {
+  app.listen(9000, () => {
+    console.log("Server is running on port 9000");
+  });
+}
+
+module.exports = app;
