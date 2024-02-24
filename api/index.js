@@ -16,6 +16,10 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
+app.get("/", (_req, res) => {
+  res.json({ message: "Ada Max is alive" });
+});
+
 app.post("/signIn", validate(signInSchema), async (req, res, next) => {
   try {
     const user = await pg
