@@ -2,12 +2,13 @@ const { SignJWT, jwtVerify } = require("jose");
 
 const { JWT_SECRET } = process.env;
 
-const getToken = async (id, name, email) => {
+const getToken = async (id, name, email, isAdmin) => {
   const jwt = await new SignJWT({
     user: {
       id,
       name,
       email,
+      role: isAdmin ? "admin" : "user",
     },
   })
     .setProtectedHeader({ alg: "HS256" })

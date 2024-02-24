@@ -22,16 +22,25 @@ app.get("/api/", (_req, res) => {
 
 app.post("/api/signIn", validate(signInSchema), async (req, res, next) => {
   try {
+    const { email, password } = req.body;
     const user = await pg
       .select("*")
       .from("User")
-      .where("email", req.body.email)
-      .where("password", req.body.password)
+      .where("email", email)
+      .where("password", password)
       .first();
 
-    const token = await getToken(user.id, user.name, user.email);
+    if (!user) {
+      res.status(401).json({ message: "Invalid email or password" });
+      return;
+    }
+
+    const isAdmin = email === "adamax@adamax.com";
+
+    const token = await getToken(user.id, user.name, user.email, isAdmin);
 
     res.json({ token });
+    return;
   } catch (error) {
     next(error);
   }
