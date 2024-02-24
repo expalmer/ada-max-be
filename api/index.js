@@ -16,11 +16,11 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-app.get("/", (_req, res) => {
+app.get("/api/", (_req, res) => {
   res.json({ message: "Ada Max is alive" });
 });
 
-app.post("/signIn", validate(signInSchema), async (req, res, next) => {
+app.post("/api/signIn", validate(signInSchema), async (req, res, next) => {
   try {
     const user = await pg
       .select("*")
@@ -37,7 +37,7 @@ app.post("/signIn", validate(signInSchema), async (req, res, next) => {
   }
 });
 
-app.get("/avatar", auth, async (_req, res, next) => {
+app.get("/api/avatar", auth, async (_req, res, next) => {
   try {
     const data = await pg.select("*").from("Avatar");
     return res.json(data);
@@ -46,7 +46,7 @@ app.get("/avatar", auth, async (_req, res, next) => {
   }
 });
 
-app.get("/profile", auth, async (req, res, next) => {
+app.get("/api/profile", auth, async (req, res, next) => {
   try {
     const data = await pg
       .select("*")
@@ -59,25 +59,30 @@ app.get("/profile", auth, async (req, res, next) => {
   }
 });
 
-app.post("/profile", auth, validate(profileSchema), async (req, res, next) => {
-  try {
-    const item = {
-      userId: req.user.id,
-      avatarId: req.body.avatarId,
-      name: req.body.name,
-      color: req.body.color,
-    };
+app.post(
+  "/api/profile",
+  auth,
+  validate(profileSchema),
+  async (req, res, next) => {
+    try {
+      const item = {
+        userId: req.user.id,
+        avatarId: req.body.avatarId,
+        name: req.body.name,
+        color: req.body.color,
+      };
 
-    const data = await pg.insert(item).into("Profile").returning("*");
+      const data = await pg.insert(item).into("Profile").returning("*");
 
-    return res.json(data);
-  } catch (error) {
-    next(error);
+      return res.json(data);
+    } catch (error) {
+      next(error);
+    }
   }
-});
+);
 
 app.put(
-  "/profile/:id",
+  "/api/profile/:id",
   auth,
   validate(profileSchema),
   async (req, res, next) => {
@@ -107,7 +112,7 @@ app.put(
   }
 );
 
-app.delete("/profile/:id", auth, async (req, res, next) => {
+app.delete("/api/profile/:id", auth, async (req, res, next) => {
   try {
     const data = await pg
       .delete()
