@@ -16,6 +16,8 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
+app.get("/add", async (req, res) => {});
+
 app.get("/api/", (_req, res) => {
   res.json({ message: "Ada Max is alive" });
 });
@@ -49,7 +51,28 @@ app.post("/api/signIn", validate(signInSchema), async (req, res, next) => {
 app.get("/api/avatar", auth, async (_req, res, next) => {
   try {
     const data = await pg.select("*").from("Avatar");
-    return res.json(data);
+    const grouped = data.reduce((acc, { group, ...item }) => {
+      const a = acc.find((x) => x.name === group);
+      if (!a) {
+        return [
+          acc,
+          {
+            name: group,
+            items: [item],
+          },
+        ];
+      }
+      return acc.map((x) => {
+        if (x.name === group) {
+          return {
+            ...x,
+            items: [x.items, item],
+          };
+        }
+        return x;
+      });
+    }, []);
+    return res.json(grouped);
   } catch (error) {
     next(error);
   }
