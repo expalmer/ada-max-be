@@ -106,7 +106,6 @@ app.post(
         userId: req.user.id,
         avatarId: req.body.avatarId,
         name: req.body.name,
-        color: req.body.color,
       };
 
       const data = await pg.insert(item).into("Profile").returning("*");
@@ -128,7 +127,6 @@ app.put(
         userId: req.user.id,
         avatarId: req.body.avatarId,
         name: req.body.name,
-        color: req.body.color,
       };
 
       const data = await pg

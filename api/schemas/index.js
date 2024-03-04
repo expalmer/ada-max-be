@@ -17,7 +17,6 @@ const profileSchema = z.object({
   body: z.object({
     avatarId: z.number(),
     name: z.string().min(1),
-    color: z.enum(["1", "2", "3", "4", "5"]),
   }),
 });
 
