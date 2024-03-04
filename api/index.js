@@ -51,28 +51,22 @@ app.post("/api/signIn", validate(signInSchema), async (req, res, next) => {
 app.get("/api/avatar", auth, async (_req, res, next) => {
   try {
     const data = await pg.select("*").from("Avatar");
-    const grouped = data.reduce((acc, { group, ...item }) => {
-      const a = acc.find((x) => x.name === group);
-      if (!a) {
-        return [
-          acc,
-          {
-            name: group,
-            items: [item],
-          },
-        ];
+    const groupedByKey = data.reduce((acc, { group, ...item }) => {
+      if (!acc[group]) {
+        acc[group] = [];
       }
-      return acc.map((x) => {
-        if (x.name === group) {
-          return {
-            ...x,
-            items: [x.items, item],
-          };
-        }
-        return x;
-      });
-    }, []);
-    return res.json(grouped);
+      acc[group].push(item);
+      return acc;
+    }, {});
+
+    const groups = Object.entries(groupedByKey).map(([key, items]) => {
+      return {
+        name: key,
+        items,
+      };
+    });
+
+    return res.json(groups);
   } catch (error) {
     next(error);
   }
