@@ -79,7 +79,18 @@ app.get("/api/profile", auth, async (req, res, next) => {
       .from("Profile")
       .where("userId", req.user.id);
 
-    return res.json(data);
+    const avatars = await pg.select("*").from("Avatar");
+
+    const response = data.map((profile) => {
+      const avatar = avatars.find((a) => a.id === profile.avatarId);
+      return {
+        id: profile.id,
+        name: profile.name,
+        avatar,
+      };
+    });
+
+    return res.json(response);
   } catch (error) {
     next(error);
   }
