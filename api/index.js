@@ -102,7 +102,7 @@ app.get("/api/profile/:id", auth, async (req, res, next) => {
       .where("id", req.params.id)
       .first();
 
-    if (!profile) {
+    if (!data) {
       return res.status(404).json({ message: "Profile not found" });
     }
 
