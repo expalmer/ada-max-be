@@ -16,8 +16,6 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-app.get("/add", async (req, res) => {});
-
 app.get("/api/", (_req, res) => {
   res.json({ message: "Ada Max is alive" });
 });
@@ -96,28 +94,23 @@ app.get("/api/profile", auth, async (req, res, next) => {
   }
 });
 
-app.get(
-  "/api/profile/:id",
-  auth,
-  validate(idSchema),
-  async (req, res, next) => {
-    try {
-      const data = await pg
-        .select("*")
-        .from("Profile")
-        .where("id", req.params.id)
-        .first();
+app.get("/api/profile/:id", auth, async (req, res, next) => {
+  try {
+    const data = await pg
+      .select("*")
+      .from("Profile")
+      .where("id", req.params.id)
+      .first();
 
-      if (!profile) {
-        return res.status(404).json({ message: "Profile not found" });
-      }
-
-      return res.json(data);
-    } catch (error) {
-      next(error);
+    if (!profile) {
+      return res.status(404).json({ message: "Profile not found" });
     }
+
+    return res.json(data);
+  } catch (error) {
+    next(error);
   }
-);
+});
 
 app.post(
   "/api/profile",
