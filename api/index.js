@@ -166,7 +166,7 @@ app.put(
         return res.status(404).json({ message: "Profile not found" });
       }
 
-      return res.json(data);
+      return res.status(204).send();
     } catch (error) {
       next(error);
     }
@@ -185,7 +185,7 @@ app.delete("/api/profile/:id", auth, async (req, res, next) => {
       return res.status(404).json({ message: "Profile not found" });
     }
 
-    return res.json(data);
+    return res.status(204).send();
   } catch (error) {
     next(error);
   }
