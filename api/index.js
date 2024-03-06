@@ -109,7 +109,8 @@ app.get("/api/profile/:id", auth, async (req, res, next) => {
     const avatar = await pg
       .select("*")
       .from("Avatar")
-      .where("id", data.avatarId);
+      .where("id", data.avatarId)
+      .first();
 
     return res.json({
       id: data.id,
