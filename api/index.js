@@ -106,7 +106,16 @@ app.get("/api/profile/:id", auth, async (req, res, next) => {
       return res.status(404).json({ message: "Profile not found" });
     }
 
-    return res.json(data);
+    const avatar = await pg
+      .select("*")
+      .from("Avatar")
+      .where("id", data.avatarId);
+
+    return res.json({
+      id: data.id,
+      name: data.name,
+      avatar,
+    });
   } catch (error) {
     next(error);
   }
