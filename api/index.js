@@ -257,7 +257,7 @@ app.get("/api/trail-offers", async (req, res, next) => {
   return res.json(data);
 });
 
-app.get("/api/offer/:id", async (req, res, next) => {
+app.get("/api/trail-offers/:id", async (req, res, next) => {
   const id = parseInt(req.params.id, 10);
 
   const offer = offersData.find((item) => item.id === id);
