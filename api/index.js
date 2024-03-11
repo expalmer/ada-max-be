@@ -191,6 +191,100 @@ app.delete("/api/profile/:id", auth, async (req, res, next) => {
   }
 });
 
+app.get("/api/banners", async (req, res, next) => {
+  try {
+    const data = await pg
+      .select(
+        "Movie.id",
+        "Movie.title",
+        "Banner.description",
+        "Movie.imageTitle"
+      )
+      .from("Banner")
+      .leftJoin("Movie", "Banner.movieId", "Movie.id")
+      .orderBy("order", "asc");
+
+    if (!data) {
+      return res.json([]);
+    }
+
+    const banners = data.map((item) => {
+      return {
+        id: item.id,
+        title: item.title,
+        description: item.description,
+        headline: `/images/movies/${item.imageTitle}-title.webp`,
+        video: `/images/movies/${item.imageTitle}-video.webp`,
+        image: `/images/movies/${item.imageTitle}-image.webp`,
+        link: `/movie/${item.id}`,
+      };
+    });
+
+    return res.json(banners);
+  } catch (error) {
+    next(error);
+  }
+});
+
+const offersData = [
+  {
+    id: 1,
+    title: "The Best of 2020",
+    offers: [1, 3, 4, 5, 6, 7],
+  },
+  {
+    id: 2,
+    title: "Streaming only on Ada Max",
+    offers: [6, 7, 8, 9, 10, 4],
+  },
+  {
+    id: 3,
+    title: "Watch it again",
+    offers: [8, 1, 4, 3, 5, 10],
+  },
+  {
+    id: 4,
+    title: "Top 10 in US Today",
+    offers: [10, 9, 8, 7, 3, 1],
+  },
+];
+app.get("/api/trail-offers", async (req, res, next) => {
+  const data = offersData.map((item) => ({
+    offerId: item.id,
+    title: item.title,
+  }));
+
+  return res.json(data);
+});
+
+app.get("/api/offer/:id", async (req, res, next) => {
+  const id = parseInt(req.params.id, 10);
+
+  const offer = offersData.find((item) => item.id === id);
+
+  if (!offer) {
+    return res.status(404).json({ message: "Offer not found" });
+  }
+
+  const movies = await pg.select("*").from("Movie");
+
+  const data = {
+    offerId: id,
+    title: offer.title,
+    offers: offer.offers.map((offerId) => {
+      const movie = movies.find((m) => m.id === offerId);
+      return {
+        id: movie.id,
+        title: movie.title,
+        image: `/images/movies/${movie.imageTitle}-h.webp`,
+        link: `/movie/${movie.id}`,
+      };
+    }),
+  };
+
+  return res.json(data);
+});
+
 app.use((err, req, res, next) => {
   res.status(500).json({ error: err.message });
 });
