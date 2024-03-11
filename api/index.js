@@ -214,7 +214,7 @@ app.get("/api/banners", async (req, res, next) => {
         title: item.title,
         description: item.description,
         headline: `/images/movies/${item.imageTitle}-title.webp`,
-        video: `/images/movies/${item.imageTitle}-video.webp`,
+        video: `/images/movies/${item.imageTitle}-video.mp4`,
         image: `/images/movies/${item.imageTitle}-image.webp`,
         link: `/movie/${item.id}`,
       };
